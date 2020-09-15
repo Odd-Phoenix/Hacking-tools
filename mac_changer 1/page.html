@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>MAC_Changer 1</title>
+</head><body>Now, we're going to write a Python script that will do this for us and don't fret if you still don't havethe basic Python knowledge but I promise that as we program, you'll get a hang of the Python language.<br/>
+<br/>
+From what we know so far, to change the MAC address, we have to run a couple of linux commands, therefore our program must be able to execute those terminal commands, the same way we did them manually. For us to be able to execute system commands we have to use the subprocess module. <br/>
+<br/>
+Amodule in programming is<br/>
+<br/>
+The subprocess module contains a nmber of functions that allow us to execute system commands, and these commands depends on the OS that execute the script. Here's the the subprocess module page, I recommend broesing through and reading the documenttion.<br/>
+<br/>
+A function is <br/>
+<br/>
+Subprocess syntax:<br/>
+import subprocess<br/>
+subprocess.call("COMMAND", Shell=True)<br/>
+<br/>
+The syntax above, subprocess.call("COMMAND", Shell=True), tell us that the module is subprocess and we're using the call function The call function allows us to run system sommands but in the foreground and not in the backgroun, waiting for the command to finish executing before moving to the next line.<br/>
+<br/>
+<b>NB: I'm going to be writing the codes without the use of the sudo command, because i'll be using root privileges but you could add sudo before your commands while writing the program, it won't affect the outcome..</b>&nbsp;<br/>
+<br/>
+Here's an example of the subprocess module, while using the sudo command in the program.<br/>
+<br/>
+<img src="image.png" /><br/>
+<br/>
+A simple use of the subprocess module, running the ifconfig command, so you unerstand how to import a modeule and use the subprocess.call.<br/>
+<br/>
+Now, let's begin writing our MAC changer script.<br/>
+<br/>
+<img src="image 2.png" /><br/>
+<br/>
+This is the very terrible script to change our MAC address but it works, this is the exact process we followed to manually change the adress. Here's the outcome when I run it, to show you that it really does work:<br/>
+<br/>
+<img src="image 3.png" /><br/>
+<br/>
+As shown above, the script works, you might be wondering why I said it was terrible if it actually works. Well, the fact that it works doesn't mean it can't be better written. Think about it, what if I have my network adapter plugged in and I want to change the MAC, I won't be able to, becaus the script is hard set for eth0 alone. <br/>
+<br/>
+So here's what we need to make this script a whole lot better:<ul><li>We want to be able to get user input. What interface to change.</li>
+<li>We need to be able to accept input for the MAC address.</li>
+<li>We need to let the user know when the MAC address inputed is a wrong format.</li>
+<li>We need to be able to confirm that the MAC address was changed, by adding the ifconfig command in the script.</li>
+<li>Help message, to show the user how how to input values</li>
+</ul>
+<br/>
+To achieve these, we need to carry out the following in our script:<ul><li>Create variables &nbsp;</li>
+<li>User input and handling.</li>
+<li>concatenation</li>
+<li>Arguments</li>
+<li>Functions</li>
+<li>If statement</li>
+<li>Regular Expressions (Regex)</li>
+</ul>
+<br/>
+<br/>
+Now we're going to use vriables for the parts of the script that can change depending on the users prefrence, like the interface and MAC address <br/>
+<br/>
+In simple words, a variable is a value that can be changed through the user input or the program itself, that is stored in memory. For example, x =1. x is the varaible holding the value of 1.<br/>
+Let's implement this in our script. <br/>
+<br/>
+<b>NB: You have to create a variable before you can call or use it and it is common practice to have meaningful variable name, names that are relevant to the value stored. Variable names are case sensitive.</b><br/>
+<br/>
+<b>Creating variables &amp; Concatenation.</b><br/>
+<br/>
+<img src="image 4.png" /><br/>
+<br/>
+<img src="image 5.png" /><br/>
+Result.<br/>
+<br/>
+We ahve implemented the use of variables to help make the script a little better than the initial stage but it still has flaws, like not accepting user input. So the user has to manually change the MAC address from the script everytime, which would defeat the purpose of writing a script in the first place.<br/>
+<br/>
+<b>Getting User Input.</b><br/>
+<br/>
+We'll be using the input function, to accomplish this task. <br/>
+<br/>
+<img src="image 6.png" /><br/>
+<br/>
+Here's the result of adding the input function to our script:<br/>
+<br/>
+<img src="image 7.png" /><br/>
+<br/>
+I'm going to add a print statement to the script, so that when the user runs their input, they can see it and be sure that it's what was run by the script. Like this:<br/>
+<br/>
+<img src="image 8.png" /><br/>
+<br/>
+<img src="image 9.png" /><br/>
+<br/>
+<br/>
+<b>Handling User Input</b>.<br/>
+<br/>
+Our input function is not secure, because we aren't checking to make sure that the user input is the required format or characters.If the user input is not handled, our script can be hijacked and used to do things we didn't write it for. We sure don't want that, well maybe you do but I don't.<br/>
+This isn't really vital in this particular script but you definitely want to keep it in mind when you're writing other programs<br/>
+<br/>
+I didn't mention that there are two ways of implementiing the subprocess.call function, the first one is what we've been using in ou script so for and the second way is how we can handle user input.<br/>
+<br/>
+The second call function syntax, implements lists instead of strings. So every element in the command is a word in the list and they're seperated by a space.<br/>
+A list is just a number of element taht is enclosed between square brackets [].<br/>
+<br/>
+Here is what the script looks like using the second subprocess.call function:<br/>
+<br/>
+<img src="image 10.png" /><br/>
+<br/>
+This is a much more secure version than what we have been using in our script previously, 'cause Python now knows that all the elements are part of the same ifconfig command. So even if someone tries to hijacked the ifconfig variable and put a commans in their, Python will know not to treat it as a command and try executing it withing the ifconfig command which will produce an error.<br/>
+<br/>
+So we'll get rid of our initial subprocess.call function and use this one.<br/>
+<br/>
+<img src="image 11.png" /><br/>
+<br/>
+Run it and we get:<br/>
+<br/>
+<img src="image 12.png" /><br/>
+<br/>
+This way our script will not be hijacked.<br/>
+<br/>
+<b>Arguments.</b><br/>
+<br/>
+This script will make more sense if we let the user input the values as arguments. Arguments are values provided to the program when they are being called. To implent arguments we will be using a Python lmodule called optparse. It's a module that lets us get arguments from a user, parese and use them in our code. <br/>
+<br/>
+<b>NB: You have to import a module, before calling a function in it to use it.</b><br/>
+<br/>
+<img src="image 13.png" /><br/>
+<br/>
+<br/>
+parser is just similar to a variable, like interface or new_mac, the difference is that the value it holds is different than the value that interface or new_mac holds. Parser holds whatever OptionParser() returns<br/>
+Notice the names, it's a naming convention in Python and because it starts with a capital letter, it's a class. A class is a rule for an object, so this class determines what we can do for the parser object. Don't worry, you'll get a better understanding of objects as we keep building our tools.<br/>
+<br/>
+So we're teaching the parser object/child, telling it to allow the user to enter a value under the -i or --interface argumment. Whatever value is entered should be stored in the interface (dest) and if the user requuires help, display this help message so they know what is required, like this:<br/>
+<br/>
+<img src="image 14.png" /><br/>
+<br/>
+<img src="image 15.png" /><br/>
+<br/>
+Now, lets add in the argument for the new MAC address and see the outcome:<br/>
+<br/>
+<img src="image 16.png" /><br/>
+<br/>
+<img src="image 17.png" /><br/>
+<br/>
+So we have our arguments, next we need to set up the user input value and to do this, we have to use varables.<br/>
+<br/>
+<img src="image 18.png" /><br/>
+<br/>
+This method will return &nbsp;two (2) sets of information, the argument and the option. To capture this, we're using two (2) variables called option and arguments. <br/>
+<br/>
+<b>NB: You can use whatever names you want for your variables, they don't have to be called, options or parser, etc, but make sure they are meaningful names.</b><br/>
+<br/>
+Options holds the value that the user inputs, so to acces the value for the interface, we change the interface in our subprocess.call line to options.interface, same goes for the MAC address too. So to make this process easier, we can just change the variables to hold options.interface and option.vnew_mac. Like this:<br/>
+<br/>
+<img src="image 19.png" /><br/>
+<br/>
+This is what we get when we run the script:<br/>
+<br/>
+<img src="image 20.png" /><br/>
+<br/>
+<br/>
+<b>Define and Call Function.</b><br/>
+<br/>
+This is a good enough program, good enough because it looks messy and needs refactoring, so we are going to use functions.<br/>
+A function is a block of organized, reusable code that is used to perform a single, related action. &nbsp;We have used functions in our script, like the input function. Functions make our code pretty and reusable.<br/>
+<br/>
+NB: That all the code within the defined function, have to be indented the same. Python language seperates blocks of code by their indentation.<br/>
+<br/>
+<img src="image 21.png" /><br/>
+<br/>
+Our function is defined, but if we don't call it, it won't run. Just like when we import a module and we have to call it to use it. So all we have to do, is call change_mac.<br/>
+<br/>
+I'm going to delete these, because i'm already using it directly in the change_mac function.<br/>
+<br/>
+<img src="image 22.png" /><br/>
+<br/>
+Here's our script, lets run it and see if it still works:<br/>
+<br/>
+<img src="image 24.png" /><br/>
+<br/>
+<img src="image 23.png" /><br/>
+<br/>
+We're going to create a new function to parse the user input and return the argumebts and the value antered by the user, which is what our parser block of coe does. So we'rll define a function and move the parser block of code into it.<br/>
+<br/>
+<img src="image 25.png" /><br/>
+<br/>
+In the get_arguments function, instead of initializing the option variable at the end, it'll return the value that the parser.parse_args() returns. So when the grt_arguments function is called, it'll capture the returned value using the option, arguments variables. So now Python know what options is equals to and our script will run without any error of an undefined function.<br/>
+<br/>
+<img src="image 26.png" /><br/>
+<br/>
+<img src="image 27.png" /><br/>
+<br/>
+Looking at our script, you can see that it's much neater, much readable and reusable, 'cause anyof the functions can be used whenever we want, without having to type out a chunck of code.<br/>
+<br/>
+<b>Error Message.</b><br/>
+<br/>
+Our script looks pretty clean but we don't have a way of letting the user know why they get an erroe, after inputting the wrong value format.<br/>
+To do this we need to use if statement, for desicion making. <br/>
+<br/>
+If statements are conditional statements. Meaning, if a statement is true a block of code will be executed and if it's false another block of code will be executed.<br/>
+<br/>
+For our script, we want to write an if statement that checks if the user enters a value for the MAC address and only print an error message if the user didn't enter a MAC address. So the code ill only be executed if the condition of no MAC address is true.<br/>
+<br/>
+<img src="image 28.png" /><br/>
+<br/>
+<img src="image 29.png" /><br/>
+<br/>
+Now lets run our script without an interface or MAC address, so we know that our error message worked.<br/>
+<br/>
+<img src="image 30.png" /><br/>
+It worked. <br/>
+<br/>
+All that is left to be added to our script, is checking to make sure that the MAC address of the specified interface was changed, as you probably notice, I keep running ifconfig after to check that.The main purpose of building the script is to manually do as little as possible.<br/>
+<br/>
+This requires a simple algorith, with the goal to check that the MAC address that the user requested was successfully change, this will be done at the end of the script. W're going to be using a function in the subprocess module called subprocess.check_output.<br/>
+<br/>
+<b>Regular Expression.</b><br/>
+<br/>
+Regex is a special sequence of character that helps matvh or find specific patterns withing a string. We'll be using another Python moule called re, which stands for regex. But before we do that we need to find out the pattern of our MAC address, copy the rseult of your ifconfig command, oprn up your browser and search for pythex. Pythex allows us to build regex rules, so paste your copied result in the serach bar, click on the regex cheatsheet to get an idea of the syntax to use. I'm going to leave this for you to practice and figure out.<br/>
+<br/>
+Here's the rule:<br/>
+<br/>
+<img src="image 31.png" /><br/>
+<br/>
+<img src="image 32.png" /><br/>
+<br/>
+Here's the result:<br/>
+<br/>
+<img src="image 33.png" /><br/>
+<br/>
+We're going to create function for checking our MAC address, to make our script pretty and our code reusable.<br/>
+<br/>
+<img src="image 34.png" /><br/>
+<br/>
+<img src="image 35.png" /><br/>
+<br/>
+<img src="image 36.png" /><br/>
+<br/>
+<img src="image 37.png" /><br/>
+<br/>
+We're finally done with our MAC changer script.<br/>
+<br/>
+<img src="image 38.png" /><br/>
+<br/>
+<img src="image 39.png" /><br/>
+<br/>
+<img src="image 40.png" /><br/>
+<br/>
+Next, we'll be building a network scanner.<br/>
+<br/>
+Until next time, Keep learning. Keep Hacking. And don't forget to breathe!<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+&nbsp;<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</body></html>

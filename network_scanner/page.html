@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Network_Scanner</title>
+</head><body><b>NetworkScanner.</b><br/>
+<br/>
+Infomation gathering is one of the most important stage of hacking or penetration testing, you can'tgain access to any system if you don't have enough information about the system. <br/>
+<br/>
+If you happen to be on a network and your targwt is also connected to that same network, you need to be able to discover all the clients connected to the network, get their MAC and IP addresses, then you can get on to gathering more information or running some attacks, in other to gain access to your target. Nmap and netdiscover will be able to do this freally well for you (I use this tools in the scanning and enumeration section of the thical hacking and Pentesting category), but we're going to build our own scanner from scratch, to have a deeper understanding on how network scanners work and how networks work in general.<br/>
+<br/>
+We are going to build a network scanner similar to netdiscover, it's an in-built Kali network scanning tool, I recommend checking it out and see how it works.<br/>
+<br/>
+So because I'm certain not everyone has a wireless adapter to run the scans and attacks with the ttols we'll be building, I recommend downloading an install a virtual windows machine to run theses scan and attacks against. You can chose to run these attacks against vany machine but I recommend using virtual machines, it's safer for beginners incase you break something and they are easy to fix. Windows is a common OS, that's why I picked windows for the target machine.<br/>
+<br/>
+here's a link [https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/] to free Windows virtual machines that you can install, make sure you select the right hos\t OS, and the right virtual macine image. Once doenloaded, unzip and import to virtual machine, you can modify the machine to your taste (you don't need much space on it). i<br/>
+<br/>
+f a pass word is required, the password is Passw0rd!<br/>
+<br/>
+<img src="image.png" /><br/>
+<br/>
+<br/>
+The easiest way to discover clients on the same network, is to replicate what a device wuld do to discover another device on the same network. Don't forget that for devices to communicate within a network they make use of their &nbsp;MAC address and not IP address. To get the MAC address of a device whos IP address is already know, you use a protocol called ARP (Address Resolution Protocol),it's a protocol that allows the linking of IP adresses to MAC addresses<br/>
+<br/>
+The ARP send a request to a specific MAC address in the whole network (known as the broadcast MAC address), and all clients on the network recieves the packet sent from the request to the broadcast MAC address, which basically asks all the devices, who has the IP address of the machine your looking for and the machine with the MAC address will respond, it's called the ARP response and the MAC is shown in the response.<br/>
+<br/>
+I'm going to show you a simple but terrible way to implement the ARP into a script, then we'll begin building and making the script better. We're going to use a module called Scapy. here's the scapy documentation. <br/>
+<br/>
+Here is how to import scapy according to the documentation. The as scapy is just me telling it that when i call a function in the module, i'll be using scapy, because it's shorter, than scapy.all.<br/>
+<br/>
+<img src="image 2.png" /><br/>
+<br/>
+<br/>
+I created a function called scan, because it scans (obviously) and it takes an IP address as it's variable, then I use a simple scapy module function, giving the IP to the function. Next I call the function and provide the IP i want to scan. Very simple like I promised.<br/>
+<br/>
+<img src="image 3.png" /><br/>
+<br/>
+I'm going to provie my router IP and use it for the scan, To get your router IP use this command in your terminal: route -n. Don't forget you need root privileges for this, so add the sudo before the command, if you're not already on root.<br/>
+<br/>
+<img src="image 4.png" /><br/>
+<br/>
+<br/>
+Now, here's an advance script for network scanning but in order to do this without getting confised, we divife this problem into smaller problems, and solve the smaller ones one at a time, till everything is solved as a whole, by defining our own functions. Our goal is to discover clients on network (big problem), so here's the smaller problems:<ul><li>Create arp request directed to broadcast MAC asking for IP.</li>
+<li>Send packets and recieve response.</li>
+<li>Parse the response</li>
+<li>Print the result.</li>
+</ul>
+<br/>
+<b>Using Scapy to create ARP requests.</b><br/>
+<br/>
+arp_request is a variable, that hold and arp packet. Scapy is the module that lets us create and arp packet object. The scapy.ARP class allows us to print a summary of the object created (scapy.ARP)<br/>
+<br/>
+<img src="image 5.png" /><br/>
+<br/>
+This works, but we need to have a variable to store the user input, because this script has a fixed IP. So we need to modify the object and set the value to any IP the user provides, to do this we'll use another scapy function, the ls function. This would give us a list of all the fields thatt we can set, a discription of what each fiel mean, and the default value.<br/>
+<br/>
+<img src="image 6.png" /><br/>
+<br/>
+<br/>
+<img src="image 7.png" /><br/>
+<br/>
+Next we need to make sure that the packet destination MAC is the broadcast MAC, so that all the clients on the network gets it. In order to do this we need an ethernet frame, like I said at in network is sent using the MAC not the IP address, the MAC is the physical address and it's set in the ethernet part. Therefore, we need to create an ethernet frame and append the arp_requests to it later. Creating this is very similar to how we created the arp_request.<br/>
+<br/>
+<img src="image 8.png" /><br/>
+<br/>
+NB: Don't forget that you can call the variables whatever you like, just make sure they're meaningful names.<br/>
+<br/>
+The point of using ether is to make sure that the packet will be sent to the broadcast MAC address and not to only one device, for this, we need to set the MAC address to that of the broadcast. Just like we did for the IP, we're going to use the scapy.ls function and use the name of the class we're trying to get the information about, like this:<br/>
+<br/>
+<img src="image 9.png" /><br/>
+<br/>
+<br/>
+As youcan see, it gave us the list of all the feilds that can be set and their description. In our case the broadcast MAC address is virtual but even at that, when you send out a packet, all clients on the same network will recieve it.<br/>
+<br/>
+<img src="image 10.png" /><br/>
+<br/>
+From the above , the result tells us that the packet will be sent from the IP adress, which is my Kali machine, to the MAC adress of the broadcast. We already have the arp_request variable, using the arp object from scapy, to ask who has the target IP and we've also set the destination MAC to the broadcast. Which is the first and second part of our small problem.<br/>
+Now we have to combine this two packets into one and our first small problem is solved, to do this in scapy, we'll use the forward slash (/), which appends the arp to the broadcast. <br/>
+<br/>
+<img src="image 11.png" /><br/>
+<br/>
+You can see that the result, shows an Ether art and an ARP part, We can print out more details about the contents of the packet sent, like this, you can use the show method on all the other packets.<br/>
+<br/>
+<img src="image 12.png" /><br/>
+<br/>
+This is the show combination of the two (objects we created), the Ether and ARP packet, which contains two (2) parts. The Ethernet part, which makes surethat thepacket is diercted to the broadcast MAC and the ARP part asks who has the IP that is passed in the function.<br/>
+<br/>
+<b>Sending &amp; Recieving Packets.</b><br/>
+<br/>
+The first step of our algorith =m s done, now we have to try to send the created packet into the network and wait to get &nbsp;response. We'll use a scapy functio for this, called srp. Scapy has a function called sr, which means send an recieve but we'll be using a different version of this function called srp and the difference is that the srp allows the sending of packets with custom Ether part. So, because the Ether we're using is custom, we're using the srp function, which will send the packet we give and recieve the respnse but we'll need to capture the returne function in a variable. It returns more than one (1) value, it'll capture two (2) values, one for the answered packets and the other the unanswered packets.<br/>
+<br/>
+I adde a timeout, so the program when run, waits for the specified time and if there's no response, it moves on, &nbsp;instead of waiting forever<br/>
+<br/>
+<img src="image 13.png" /><br/>
+<br/>
+The second small problem is solved.<br/>
+<br/>
+<b>Parse The Response.</b><br/>
+<br/>
+The response that we get is stored in a variable called answered, it makes the result easier for us to read but what if it was being used by a different user? And the user wants to use the MAC address returned, to carry out further attacks. Then we need to be able to etract the MAC address on its own, we just have to print out only the MAC &amp; IP addresses and we need to parse the response to extract the useful information from it.<br/>
+<br/>
+If you did read through the scapy documentation, you hopefully saw that it tells us the send and response funtion, returns back to list, one for the answered and the other for the unaswered.<br/>
+Here's anoverview of lists, this is also included in the Ethical hacking category in the Python bascis section, you should definitely check it out.<br/>
+<br/>
+In other lanhuages, they ae called arrays, but in Python arrays are referred to as lists. Lists are a list of elements/values, stored in one variable. Lists are made using square brackets [], and for every value in the list, the indexing starts from zero (0) and to access any element from a list, you use the variable name and the index of the element within square brackets []. <br/>
+<br/>
+Hihghly recommend reading up on lists, to get a broader understanding of them, as we'll be using them a lot in this course and they're quite powerful too.<br/>
+<br/>
+The for loop is to iterate the answered list, so for each element in the answered list, orint the elemnt.<br/>
+<br/>
+<img src="image 14.png" /><br/>
+<br/>
+From the result, you can see that the MAC address needed is the element of one(1), so we'll add [1] after our print element. To print the Ip address sending the packet and the MAC address recicving the packet<br/>
+<br/>
+<img src="image 15.png" /><br/>
+<br/>
+This is the end of step three (3), parsing the captured values, in the answered list, we used loops to iterate through the list<br/>
+<br/>
+<b>Print Result, Nicely.</b><br/>
+<br/>
+This is the last step, which we kinda already achieved in the previous step, but in a case where the user has multiple IP addresses to iterate through, we need to make sure that the print out is nice and easy to read<br/>
+<br/>
+So we basically want our result to be printed out like the Kali tool netdiscover, which allows us to list all the IP addresses and their associated MAC addresses in the current network. Similar to what our program already prints out but way nicer and arranged.<br/>
+<br/>
+<img src="image 16.png" /><br/>
+<br/>
+We have come to the end of our small problems. <br/>
+<br/>
+I'm leaving the user input for the IP address to you. You can check the MAC changing post or just google it.<br/>
+<br/>
+As usual, we're going to clean up our code, our result will still be the same I promise, but I like to have functions in my programs to do specific things, which makes it cleaner and easier for others to read, understand and use.<br/>
+For this, i'll b e using a dictionary, which is a better implementation and a good way of introducing you to dictionaries.<br/>
+<br/>
+You can think of dictionaries as lists, they are similar because they have a variable that corresponds to a number of elements and use keys to access the elements, instaed of index.<br/>
+In lists elements are accessed based on their location, but in dictonaries, a key is defined for each element and the elements are accessed based onthe keys, and dictionaries use curly brackets {}. <br/>
+This is a list of dictionaries, where each index has a list of values and each value has a key. So from our print out, we get the IP and MAC addresses, IP and MAC address will be keys for their respective values and the combination of these values and their individual keys, have their own index. I know, very confusing but here's what that looks like:<br/>
+<br/>
+<img src="image 17.png" /><br/>
+<br/>
+As you can see from the result, we have a big list that starts and ends with the sqaure brackets, inside it are the dictionaries, with their keys (ip &amp; mac). Now that we've created our list of dictionaries and have the data stored, lets iterate through the data and print the useful information.<br/>
+<br/>
+<img src="image 18.png" /><br/>
+<br/>
+<img src="image 19.png" /><br/>
+<br/>
+<img src="image 20.png" /><br/>
+<br/>
+<br/>
+For anyone who doesn't know how to get user input, using the argparse which is the newer version of the depricated optparse module. Here's the code for it.<br/>
+<br/>
+<img src="image 21.png" /><br/>
+<br/>
+<img src="image 24.png" /><br/>
+<br/>
+Here's the finished program.<br/>
+<br/>
+<img src="image 22.png" /><br/>
+<br/>
+<br/>
+<img src="image 23.png" /><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</body></html>
